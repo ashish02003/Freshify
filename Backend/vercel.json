@@ -1,16 +1,16 @@
 {
-    "version" : 2,
-    "name" : "Freshify",
-    "builds" : [
+    "version": 2,
+    "name": "Freshify",
+    "builds": [
         {
-            "src" : "./index.js",
-            "use" : "@vercel/node"
+            "src": "./index.js",
+            "use": "@vercel/node"
         }
     ],
-    "routes" : [
+    "routes": [
         {
-            "src" : "/(.*)",
-            "dest" : "/"
+            "src": "/(.*)",
+            "dest": "./index.js"
         }
     ]
-}     
+}

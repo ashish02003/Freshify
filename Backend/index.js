@@ -19,19 +19,14 @@ import orderRouter from './route/orderRoute.js'
 
 const app = express()
 
-//this  is for only local 
 
-// app.use(cors({
-//     credentials : true,
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     origin : process.env.FRONTEND_URL    
-// }))
 
 app.use(cors({
-  origin: ["https://freshify-ww4a.vercel.app"], // frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+    credentials : true,
+    origin : process.env.FRONTEND_URL    
+}))
+
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(morgan())

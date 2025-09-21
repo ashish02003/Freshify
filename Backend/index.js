@@ -22,10 +22,13 @@ const app = express()
 
 
 app.use(cors({
-    credentials : true,
-    origin : process.env.FRONTEND_URL    
+    credentials: true,
+    origin: [
+        process.env.FRONTEND_URL,           // Production frontend
+        'https://freshify-ybwz.vercel.app', // Your frontend (fallback)
+        'http://localhost:5173'             // Vite dev server
+    ].filter(Boolean) // Remove any undefined values
 }))
-
 
 app.use(express.json())
 app.use(cookieParser())

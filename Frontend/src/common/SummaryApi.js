@@ -1,7 +1,7 @@
 
  // This is the backend URL 
 
-export const baseURL = import.meta.env.VITE_API_URL
+export const baseURL = import.meta.env.VITE_API_URL || 'https://freshify-omega.vercel.app'
 const SummaryApi = {
     register : {
         url : '/api/user/register',

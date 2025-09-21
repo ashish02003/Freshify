@@ -21,7 +21,9 @@ import {
     RefreshCw
 } from 'lucide-react';
 
-const baseURL = 'http://localhost:8080';
+// const baseURL = 'http://localhost:8080';//This is for  local when i run it in my local server
+
+const baseURL = import.meta.env.VITE_API_URL || 'https://freshify-omega.vercel.app'; 
 
 // Enhanced toast notification function
 const showToast = (message, type = 'info') => {

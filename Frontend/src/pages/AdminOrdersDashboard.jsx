@@ -14,7 +14,9 @@ import {
   User,
 } from "lucide-react";
 
-const baseURL = "http://localhost:8080";
+// const baseURL = "http://localhost:8080";  this is the for local [1]
+
+const baseURL = import.meta.env.VITE_API_URL || 'https://freshify-omega.vercel.app'; //for when deploying [2]
 
 const AdminOrdersDashboard = () => {
   const [orders, setOrders] = useState([]);

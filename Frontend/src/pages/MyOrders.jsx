@@ -5,7 +5,9 @@ import { Package, Truck, Eye, MapPin, Clock, CheckCircle, Star, X, AlertCircle }
 import NoData from '../components/NoData';
 import toast from 'react-hot-toast';
 
-const baseURL = 'http://localhost:8080';
+// const baseURL = 'http://localhost:8080'; // for local [1]
+
+const baseURL = import.meta.env.VITE_API_URL || 'https://freshify-omega.vercel.app'; //for when deploying [2]
 
     const MyOrders = () => {
     const orders = useSelector(state => state.orders.order);
@@ -100,7 +102,9 @@ const handleSubmitCancel = async () => {
         });
 
         if (response.ok) {
-            toast.success('Order cancelled and removed successfully!');
+            toast.success('Order cancelled and removed successfully!',{
+                 autoClose: 5000, // 5 seconds
+            });
             setShowCancelModal(false);
             window.location.reload();
             return;
@@ -122,7 +126,9 @@ const handleSubmitCancel = async () => {
         });
 
         if (response.ok) {
-            toast.success('Order cancelled successfully!');
+            toast.success("Order cancelled successfully!", {
+  autoClose: 5000, // 5 seconds
+});
             setShowCancelModal(false);
             window.location.reload();
             return;
@@ -162,7 +168,9 @@ const handleSubmitCancel = async () => {
             return;
         }
           
-          alert('Review submitted successfully!');
+            toast.success("Review submitted successfully!", {
+  autoClose: 5000, // 5 seconds
+});
        
     };
 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Truck, CheckCircle, Clock, MapPin } from 'lucide-react';
 
-// const baseURL = 'http://localhost:8080'; //for local 
+// const baseURL = 'http://localhost:8080'; //This is for  local when i run it in my local serve  [1]
 
-const baseURL = import.meta.env.VITE_API_URL || 'https://freshify-omega.vercel.app';
+const baseURL = import.meta.env.VITE_API_URL || 'https://freshify-omega.vercel.app'; //for when deploying [2]
 
 const OrderTracking = ({ orderId }) => {
     const [trackingData, setTrackingData] = useState(null);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Truck, CheckCircle, Clock, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // const baseURL = 'http://localhost:8080'; //This is for  local when i run it in my local serve  [1]
 
@@ -263,14 +264,19 @@ const OrderTracking = ({ orderId }) => {
             {/* Action Buttons */}
             <div className="mt-6 flex justify-center space-x-4">
                 <button
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                 <Link to="/dashboard/myorders">← Back</Link>   
+                </button>
+                <button
                     onClick={fetchTrackingData}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                     Refresh Tracking
                 </button>
                 {trackingData.delivery_status === 'delivered' && (
                     <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        Rate Order
+                        Go back & Rate us
                     </button>
                 )}
             </div>

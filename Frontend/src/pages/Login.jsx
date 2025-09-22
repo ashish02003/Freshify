@@ -1,3 +1,5 @@
+
+
 import  { useState } from "react";
 import { IoMdEyeOff } from "react-icons/io";
 import { FaEye } from "react-icons/fa";
@@ -11,21 +13,14 @@ import fetchUserDetails from "../utils/fetchUserDetails";
 import { setUserDetails } from "../store/userSlice";
 import { useDispatch } from "react-redux";
 
-
-
-
-
 const Login = () => {
   const [data, setData] = useState({
-    
     email: "",
     password: ""
-    
   });
 
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   const dispatch = useDispatch();
-
-  
 
   const handleChange = (e) => {
     // const name = e.target.name; // ye name ki value dega jiska name like email,password hoga
@@ -52,39 +47,54 @@ const Login = () => {
   const handleSubmitData = async (e) => {
     e.preventDefault();
 
-    
-
     //Now send the data into the database
+    setIsLoading(true); // Start loading
+    // console.log("Loading started"); // Debug log
 
     try {
       const response = await Axios({
         ...SummaryApi.login,
         data:data   //yaha se backend me data bhej rhe hai
       })
-console.log("response",response)
-    if(response.data.error){
-      toast.error(response.data.message)
-    }
-
-    if(response.data.success){
-      toast.success(response.data.message)
-      localStorage.setItem("accessToken",response.data.data.accessToken)
-      localStorage.setItem("refreshToken",response.data.data.refreshToken)
-
-      const useDetails  = await fetchUserDetails();
-      dispatch(setUserDetails(useDetails.data))
       
-      setData({
-        email:"",
-        password:""
-      })
+      // console.log("Response received:", response); // Debug log
 
-      navigate("/")
-    }
-      console.log("response",response);
+      if(response.data.error){
+        // console.log("Error case"); // Debug log
+        toast.error(response.data.message)
+        setIsLoading(false); // Stop loading on error
+        return;
+      }
+
+      if(response.data.success){
+        // console.log("Success case"); // Debug log
+        toast.success(response.data.message)
+        localStorage.setItem("accessToken",response.data.data.accessToken)
+        localStorage.setItem("refreshToken",response.data.data.refreshToken)
+
+        const useDetails  = await fetchUserDetails();
+        dispatch(setUserDetails(useDetails.data))
+        
+        setData({
+          email:"",
+          password:""
+        })
+
+        // Keep loading state until navigation completes
+        setTimeout(() => {
+          // console.log("Navigating and stopping loading"); // Debug log
+          navigate("/")
+          setIsLoading(false);
+        },); // Small delay to show success state
+      } else {
+        // Handle case where response doesn't have error or success
+        // console.log("Unexpected response"); // Debug log
+        setIsLoading(false);
+      }
     } catch (error) {
-      console.log(error); 
+      // console.log("Catch block executed:", error); // Debug log
       AxiosToastError(error);
+      setIsLoading(false); // Stop loading on error
     }
   };
 
@@ -103,7 +113,7 @@ console.log("response",response)
               name="email"
               value={data.email}
               onChange={handleChange}
-            
+              disabled={isLoading} // Disable input during loading
             />
           </div>
           <div className="grid gap-1  ">
@@ -116,26 +126,38 @@ console.log("response",response)
                 name="password"
                 value={data.password}
                 onChange={handleChange}
+                disabled={isLoading} // Disable input during loading
               />
  
               <div
-                onClick={() => setshowPassword((prev) => !prev)}
-                className="cursor-pointer"
+                onClick={() => !isLoading && setshowPassword((prev) => !prev)}
+                className={`cursor-pointer ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {showPassword ? <FaEye /> : <IoMdEyeOff />}
-                
               </div>
             </div>
-            <Link  to={"/forgot-password"} className="block ml-auto hover:text-green-800">Forgot Password ? </Link>
+            <Link  
+              to={"/forgot-password"} 
+              className={`block ml-auto hover:text-green-800 ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
+            >
+              Forgot Password ?
+            </Link>
           </div>
           
           <button
-            disabled={!allData}
+            disabled={!allData || isLoading}
             className={`${
-              allData ? "bg-green-700 hover:bg-green-800" : "bg-gray-500"
-            }  text-white py-2 font-semibold  rounded`}
+              allData && !isLoading ? "bg-green-700 hover:bg-green-800" : "bg-gray-500"
+            }  text-white py-2 font-semibold rounded flex items-center justify-center gap-2`}
           >
-            Login
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
         <p>Don't  have an account?  <Link to={"/register"} className="font-semibold text-green-700 hover:text-green-800">Register</Link></p>
@@ -145,4 +167,3 @@ console.log("response",response)
 };
 
 export default Login;
-

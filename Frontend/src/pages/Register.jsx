@@ -1,3 +1,5 @@
+
+
 import  { useState } from "react";
 import { IoMdEyeOff } from "react-icons/io";
 import { FaEye } from "react-icons/fa";
@@ -17,6 +19,7 @@ const Register = () => {
     confirmPassword: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   
 
   const handleChange = (e) => {
@@ -50,6 +53,7 @@ const Register = () => {
     }
 
     //Now send the data into the database
+    setIsLoading(true); // Start loading
 
     try {
       const response = await Axios({
@@ -57,25 +61,32 @@ const Register = () => {
         data:data //yaha se backend me data bhej rhe hai
       })
 
-    if(response.data.error){
-      toast.error(response.data.message)
-    }
+      if(response.data.error){
+        toast.error(response.data.message)
+        setIsLoading(false); // Stop loading on error
+        return;
+      }
 
-    if(response.data.success){
-      toast.success(response.data.message)
-      setData({
-        name:"",
-        email:"",
-        password:"",
-        confirmPassword:""
-      })
-
-      navigate("/login")
-    }
+      if(response.data.success){
+        toast.success(response.data.message)
+        setData({
+          name:"",
+          email:"",
+          password:"",
+          confirmPassword:""
+        })
+        
+        // Keep loading state until navigation completes
+        setTimeout(() => {
+          navigate("/login")
+          setIsLoading(false);
+        },); // Small delay to show success state
+      }
       console.log("response",response);
     } catch (error) {
       console.log(error); 
       AxiosToastError(error);
+      setIsLoading(false); // Stop loading on error
     }
   };
 
@@ -95,6 +106,7 @@ const Register = () => {
               value={data.name}
               placeholder="Enter your name"
               onChange={handleChange}
+              disabled={isLoading} // Disable input during loading
             />
           </div>
           <div className="grid gap-1">
@@ -107,6 +119,7 @@ const Register = () => {
               placeholder="Enter your  valid Email ID"
               value={data.email}
               onChange={handleChange}
+              disabled={isLoading} // Disable input during loading
             />
           </div>
 
@@ -121,11 +134,12 @@ const Register = () => {
                 name="password"
                 value={data.password}
                 onChange={handleChange}
+                disabled={isLoading} // Disable input during loading
               />
 
               <div
-                onClick={() => setshowPassword((prev) => !prev)}
-                className="cursor-pointer"
+                onClick={() => !isLoading && setshowPassword((prev) => !prev)}
+                className={`cursor-pointer ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {showPassword ? <FaEye /> : <IoMdEyeOff />}
               </div>
@@ -146,23 +160,31 @@ const Register = () => {
                 name="confirmPassword"
                 value={data.confirmPassword}
                 onChange={handleChange}
+                disabled={isLoading} // Disable input during loading
               />
             
               <div
-                onClick={() => setshowconfirmPassword((prev) => !prev)}
-                className="cursor-pointer"
+                onClick={() => !isLoading && setshowconfirmPassword((prev) => !prev)}
+                className={`cursor-pointer ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {showconfirmPassword ? <FaEye /> : <IoMdEyeOff />}
               </div>
             </div>
           </div>
           <button
-            disabled={!allData}
+            disabled={!allData || isLoading}
             className={`${
-              allData ? "bg-green-700 hover:bg-green-800" : "bg-gray-500"
-            }  text-white py-2 font-semibold my-3  rounded tracking-wide`}
+              allData && !isLoading ? "bg-green-700 hover:bg-green-800" : "bg-gray-500"
+            }  text-white py-2 font-semibold my-3  rounded tracking-wide flex items-center justify-center gap-2`}
           >
-                Register
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
           </button>
 
         </form>

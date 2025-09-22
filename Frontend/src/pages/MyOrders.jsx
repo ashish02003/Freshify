@@ -395,7 +395,7 @@ return (
                                 {selectedOrder.product_details?.name}
                             </h4>
                             <p className="text-xs sm:text-sm text-gray-600 truncate">
-                                Order #{selectedOrder.orderId}
+                                OrderId: {selectedOrder.orderId}
                             </p>
                         </div>
                     </div>

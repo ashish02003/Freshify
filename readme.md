@@ -80,20 +80,30 @@ Create .env files in both backend & frontend folders. Example:
 Backend .env
 
 FRONTEND_URL = "http://localhost:5173"
+
 MONGODB_URI = your_online_mongodb_url
+
 RESEND_API =your_resend_api_key
+
 SECRET_KEY_ACCESS_TOKEN = your_access_token_secret
+
 SECRET_KEY_REFRESH_TOKEN =your_refresh_token_secret
+
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+
 CLOUDINARY_API_KEY=your_cloudinary_api_key
+
 CLOUDINARY_API_SECRET_KEY=your_cloudinary_api_secret_key
+
 STRIPE_SECRET_KEY=your_stripe_secret_key
+
 STRIPE_ENPOINT_WEBHOOK_SECRET_KEY=your_stripe_webhook_secret_key
 
 
 Frontend .env
 
 VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
+
 VITE_API_URL:"http://localhost:8080"
 
 4.>Run the application

@@ -1,239 +1,12 @@
 
 
-// import React, { useEffect, useState } from 'react'
-// import { IoSearch } from "react-icons/io5";
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import { TypeAnimation } from 'react-type-animation';
-// import { FaArrowLeft } from "react-icons/fa";
-// import useMobile from '../hooks/useMobile';
-// import { MdKeyboardVoice } from "react-icons/md";
-
-// const Search = () => {
-//   const navigate = useNavigate()
-//   const location = useLocation()
-//   const [isSearchPage, setIsSearchPage] = useState(false)
-//   const [isMobile] = useMobile()
-//   const params = useLocation()
-//   const searchText = params.search?.slice(3) || ""
-//   const [query, setQuery] = useState(searchText)
-
-//   // 🔹 For Modal
-//   const [listening, setListening] = useState(false)
-
-//   useEffect(() => {
-//     const isSearch = location.pathname === "/search"
-//     setIsSearchPage(isSearch)
-//   }, [location])
-
-//   const handleOnChange = (e) => {
-//     const value = e.target.value
-//     setQuery(value)
-//     navigate(`/search?q=${value}`)
-//   }
-
-//   // 🔹 Handle Voice Search with Modal
-
-// // 🔹 Updated Handle Voice Search with Mobile Optimizations
-// const handleVoiceSearch = async () => {
-//   // Check if already listening
-//   if (listening) {
-//     return
-//   }
-
-//   const SpeechRecognition =
-//     window.SpeechRecognition || window.webkitSpeechRecognition
-//   if (!SpeechRecognition) {
-//     alert("Your browser doesn't support voice search")
-//     return
-//   }
-
-//   // 🔹 Request microphone permission for mobile devices
-//   if (isMobile) {
-//     try {
-//       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-//       stream.getTracks().forEach(track => track.stop()) // Stop immediately after permission
-//     } catch (error) {
-//       console.error('Microphone permission denied:', error)
-//       alert("Microphone access is required for voice search. Please enable it in your browser settings.")
-//       return
-//     }
-//   }
-
-//   const recognition = new SpeechRecognition()
-//   recognition.lang = "en-IN"
-//   recognition.continuous = false
-//   recognition.interimResults = false
-//   recognition.maxAlternatives = 1
-
-//   // 🔹 Mobile-specific timeout (important!)
-//   const timeoutId = setTimeout(() => {
-//     if (listening) {
-//       recognition.stop()
-//       setListening(false)
-//     }
-//   }, isMobile ? 8000 : 12000) // 8 seconds on mobile, 12 on desktop
-
-//   try {
-//     // 🔹 Only play sound on desktop to avoid mobile audio conflicts
-//     if (!isMobile) {
-//       new Audio("/sounds/start.mp3").play().catch(e => {
-//         console.warn("Could not play start sound:", e)
-//       })
-//     }
-    
-//     setListening(true)
-//     recognition.start()
-
-//     recognition.onresult = (event) => {
-//       const transcript = event.results[0][0].transcript.trim()
-      
-//       if (transcript && transcript.length > 1) {
-//         setQuery(transcript)
-
-//         // 🔹 Only play end sound on desktop
-//         if (!isMobile) {
-//           new Audio("/sounds/end.mp3").play().catch(e => {
-//             console.warn("Could not play end sound:", e)
-//           })
-//         }
-
-//         setListening(false)
-//         navigate(`/search?q=${transcript}`)
-//       }
-      
-//       clearTimeout(timeoutId)
-//     }
-
-//     recognition.onerror = (event) => {
-//       console.error("Voice search error:", event.error)
-//       setListening(false)
-//       clearTimeout(timeoutId)
-      
-//       // 🔹 Mobile-friendly error messages
-//       switch(event.error) {
-//         case 'not-allowed':
-//           alert("🎤 Microphone access denied. Please enable microphone in your browser settings.")
-//           break
-//         case 'no-speech':
-//           if (!isMobile) {
-//             alert("No speech detected. Please try again.")
-//           }
-//           break
-//         case 'audio-capture':
-//           alert("🎤 No microphone found. Please check your device settings.")
-//           break
-//         case 'network':
-//           alert("🌐 Network error. Please check your internet connection.")
-//           break
-//         default:
-//           if (isMobile) {
-//             alert("Voice search failed. Please try again or type your search.")
-//           } else {
-//             alert(`Voice search error: ${event.error}`)
-//           }
-//       }
-//     }
-
-//     recognition.onend = () => {
-//       setListening(false)
-//       clearTimeout(timeoutId)
-//     }
-
-//   } catch (error) {
-//     console.error("Failed to start voice recognition:", error)
-//     setListening(false)
-//     clearTimeout(timeoutId)
-//     alert("Voice search is not available right now. Please try typing your search.")
-//   }
-// }
-//   return (
-//     <div>
-//       {/* 🔹 Main Search Box */}
-//       <div className='w-full min-w-[300px] lg:min-w-[420px] h-11 lg:h-12 rounded-lg border overflow-hidden flex items-center text-neutral-500 bg-slate-50 group focus-within:border-primary-200 '>
-//         <div>
-//           {isMobile && isSearchPage ? (
-//             <Link
-//               to={"/"}
-//               className='flex justify-center items-center h-full p-2 m-1 group-focus-within:text-primary-200 bg-white rounded-full shadow-md'
-//             >
-//               <FaArrowLeft size={20} />
-//             </Link>
-//           ) : (
-//             <button className='flex justify-center items-center h-full p-3 group-focus-within:text-primary-200'>
-//               <IoSearch size={22} />
-//             </button>
-//           )}
-//         </div>
-
-//         <div className='w-full h-full flex items-center'>
-//           {!isSearchPage ? (
-//             <div
-//               onClick={() => navigate("/search")}
-//               className='w-full h-full flex items-center cursor-text'
-//             >
-//               <TypeAnimation
-//                 sequence={[
-//                   'Search "milk"', 1000,
-//                   'Search "bread"', 1000,
-//                   'Search "sugar"', 1000,
-//                   'Search "paneer"', 1000,
-//                   'Search "chocolate"', 1000,
-//                   'Search "curd"', 1000,
-//                   'Search "rice"', 1000,
-//                   'Search "egg"', 1000,
-//                   'Search "chips"',
-//                 ]}
-//                 wrapper="span"
-//                 speed={50}
-//                 repeat={Infinity}
-//               />
-//             </div>
-//           ) : (
-//             <>
-//               <input
-//                 type='text'
-//                 placeholder='Search for atta dal and more.'
-//                 autoFocus
-//                 value={query}
-//                 className='bg-transparent w-full h-full outline-none'
-//                 onChange={handleOnChange}
-//               />
-//               {/* Mic Button */}
-//               <button
-//                 type="button"
-//                 onClick={handleVoiceSearch}
-//                 className="px-2 text-gray-600 hover:text-green-600"
-//               >
-//                 <MdKeyboardVoice size={22} />
-//               </button>
-//             </>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* 🔹 Listening Modal */}
-//       {listening && (
-//         <div className="fixed inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center z-50">
-//           <div className="bg-gray-900 text-white p-8 rounded-xl text-center">
-//             <p className="text-xl mb-4">Listening...</p>
-//             <div className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 animate-pulse">
-//               <MdKeyboardVoice size={22} />
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   )
-// }
-
-// export default Search
 import React, { useEffect, useState } from 'react'
 import { IoSearch } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { TypeAnimation } from 'react-type-animation';
 import { FaArrowLeft } from "react-icons/fa";
 import useMobile from '../hooks/useMobile';
-import { MdKeyboardVoice } from "react-icons/md";
+import { MdKeyboardVoice, MdMicOff } from "react-icons/md";
 
 const Search = () => {
   const navigate = useNavigate()
@@ -244,38 +17,25 @@ const Search = () => {
   const searchText = params.search?.slice(3) || ""
   const [query, setQuery] = useState(searchText)
 
-  // 🔹 For Modal and Permission Management
+  // Voice search states
   const [listening, setListening] = useState(false)
-  const [permissionGranted, setPermissionGranted] = useState(null) // null, true, false
+  const [isVoiceSupported, setIsVoiceSupported] = useState(false)
+  const [voiceError, setVoiceError] = useState('')
 
   useEffect(() => {
     const isSearch = location.pathname === "/search"
     setIsSearchPage(isSearch)
   }, [location])
 
-  // 🔹 Check microphone permission on component mount
+  // Check for voice search support
   useEffect(() => {
-    const checkMicrophonePermission = async () => {
-      if (!isMobile) return // Only check on mobile
-
-      try {
-        if (navigator.permissions) {
-          const permission = await navigator.permissions.query({ name: 'microphone' })
-          setPermissionGranted(permission.state === 'granted')
-          
-          // Listen for permission changes
-          permission.addEventListener('change', () => {
-            setPermissionGranted(permission.state === 'granted')
-          })
-        }
-      } catch (error) {
-        console.warn('Could not check microphone permission:', error)
-        setPermissionGranted(null) // Unknown permission state
-      }
+    const checkVoiceSupport = () => {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      setIsVoiceSupported(!!SpeechRecognition)
     }
-
-    checkMicrophonePermission()
-  }, [isMobile])
+    
+    checkVoiceSupport()
+  }, [])
 
   const handleOnChange = (e) => {
     const value = e.target.value
@@ -283,137 +43,283 @@ const Search = () => {
     navigate(`/search?q=${value}`)
   }
 
-  // 🔹 Updated Handle Voice Search with Mobile Audio Fix
-  const handleVoiceSearch = async () => {
-    // Check if already listening
+  // Improved voice search handler
+  const handleVoiceSearch = () => {
     if (listening) {
+      stopListening()
       return
     }
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    
     if (!SpeechRecognition) {
-      alert("Your browser doesn't support voice search")
+      setVoiceError("Voice search is not supported in this browser")
       return
     }
 
-    // 🔹 Request microphone permission for mobile devices (only if not already granted)
-    if (isMobile && permissionGranted !== true) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        stream.getTracks().forEach(track => track.stop()) // Stop immediately after permission
-        setPermissionGranted(true)
-      } catch (error) {
-        console.error('Microphone permission denied:', error)
-        setPermissionGranted(false)
-        alert("🎤 Microphone access is required for voice search. Please enable it in your browser settings and refresh the page.")
-        return
+    startVoiceRecognition(SpeechRecognition)
+  }
+
+  const startVoiceRecognition = (SpeechRecognition) => {
+    const recognition = new SpeechRecognition()
+    
+    // Enhanced Configuration for better reliability
+    recognition.continuous = false
+    recognition.interimResults = true  // Changed to true for better responsiveness
+    recognition.maxAlternatives = 3     // Increased alternatives
+    
+    // Set language based on user preference or default to English
+    recognition.lang = navigator.language || 'en-US'
+    
+    // Mobile-specific optimizations
+    if (isMobile) {
+      recognition.continuous = true    // Better for mobile
+      recognition.interimResults = true
+    }
+    
+    setListening(true)
+    setVoiceError('')
+
+    // Extended timeout for better user experience
+    const timeoutId = setTimeout(() => {
+      if (recognition) {
+        recognition.stop()
+      }
+    }, 15000) // Increased to 15 seconds
+
+    let finalTranscript = ''
+    let interimTranscript = ''
+
+    recognition.onstart = () => {
+      setListening(true)
+      console.log('Voice recognition started')
+      // Play start sound
+      playNotificationSound('start')
+    }
+
+    recognition.onresult = async (event) => {
+      interimTranscript = ''
+      finalTranscript = ''
+
+      // Process all results
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript
+        } else {
+          interimTranscript += transcript
+        }
+      }
+
+      // Show interim results in console for debugging
+      if (interimTranscript) {
+        console.log('Interim:', interimTranscript)
+      }
+
+      // Process final result
+      if (finalTranscript.trim()) {
+        clearTimeout(timeoutId)
+        
+        // Play end/success sound first
+        await playNotificationSound('end')
+        
+        // Clean and process the transcript
+        const cleanTranscript = finalTranscript.trim().toLowerCase()
+        
+        if (cleanTranscript.length > 1) {
+          // Small delay to let sound finish before navigation
+          setTimeout(() => {
+            setQuery(cleanTranscript)
+            navigate(`/search?q=${encodeURIComponent(cleanTranscript)}`)
+          }, 200)
+        }
+        
+        recognition.stop()
+      }
+      
+      // Auto-stop on mobile if we have a good interim result and silence
+      if (isMobile && interimTranscript.trim().length > 3) {
+        setTimeout(() => {
+          if (recognition && listening) {
+            recognition.stop()
+          }
+        }, 1500)
       }
     }
 
-    const recognition = new SpeechRecognition()
-    recognition.lang = "en-IN"
-    recognition.continuous = false
-    recognition.interimResults = false
-    recognition.maxAlternatives = 1
+    recognition.onaudiostart = () => {
+      console.log('Audio capture started')
+    }
 
-    // 🔹 Mobile-specific timeout (important!)
-    const timeoutId = setTimeout(() => {
-      if (listening) {
-        recognition.stop()
-        setListening(false)
-      }
-    }, isMobile ? 8000 : 12000) // 8 seconds on mobile, 12 on desktop
+    recognition.onaudioend = () => {
+      console.log('Audio capture ended')
+    }
 
-    try {
-      // 🔹 Play start sound BEFORE starting recognition (mobile fix)
-      const startSound = new Audio("/sounds/start.mp3")
-      await startSound.play().catch(e => {
-        console.warn("Could not play start sound:", e)
-      })
-      
-      // 🔹 Small delay on mobile to let audio finish before mic starts
-      if (isMobile) {
-        await new Promise(resolve => setTimeout(resolve, 200))
-      }
-      
-      setListening(true)
-      recognition.start()
+    recognition.onspeechstart = () => {
+      console.log('Speech detected')
+    }
 
-      recognition.onresult = async (event) => {
-        const transcript = event.results[0][0].transcript.trim()
-        
-        if (transcript && transcript.length > 1) {
-          // 🔹 Stop recognition first, then play sound
-          recognition.stop()
-          setListening(false)
-          
-          // 🔹 Small delay before playing end sound on mobile
-          if (isMobile) {
-            await new Promise(resolve => setTimeout(resolve, 100))
-          }
-          
-          // 🔹 Play end sound for all devices
-          const endSound = new Audio("/sounds/end.mp3")
-          await endSound.play().catch(e => {
-            console.warn("Could not play end sound:", e)
-          })
+    recognition.onspeechend = () => {
+      console.log('Speech ended')
+      // Don't auto-stop here, let onresult handle it
+    }
 
-          setQuery(transcript)
-          navigate(`/search?q=${transcript}`)
-        }
-        
-        clearTimeout(timeoutId)
-      }
-
-      recognition.onerror = (event) => {
-        console.error("Voice search error:", event.error)
-        setListening(false)
-        clearTimeout(timeoutId)
-        
-        // 🔹 Mobile-friendly error messages
-        switch(event.error) {
-          case 'not-allowed':
-            setPermissionGranted(false)
-            alert("🎤 Microphone access denied. Please enable microphone in your browser settings.")
-            break
-          case 'no-speech':
-            if (!isMobile) {
-              alert("No speech detected. Please try again.")
-            }
-            break
-          case 'audio-capture':
-            alert("🎤 No microphone found. Please check your device settings.")
-            break
-          case 'network':
-            alert("🌐 Network error. Please check your internet connection.")
-            break
-          default:
-            if (isMobile) {
-              alert("Voice search failed. Please try again or type your search.")
-            } else {
-              alert(`Voice search error: ${event.error}`)
-            }
-        }
-      }
-
-      recognition.onend = () => {
-        setListening(false)
-        clearTimeout(timeoutId)
-      }
-
-    } catch (error) {
-      console.error("Failed to start voice recognition:", error)
-      setListening(false)
+    recognition.onerror = (event) => {
       clearTimeout(timeoutId)
-      alert("Voice search is not available right now. Please try typing your search.")
+      setListening(false)
+      
+      console.error('Voice recognition error:', event.error)
+      
+      // Handle different error types with better messages
+      switch(event.error) {
+        case 'not-allowed':
+        case 'permission-denied':
+          setVoiceError("🎤 Please allow microphone access in your browser settings and try again.")
+          break
+        case 'no-speech':
+          setVoiceError("No speech detected. Try speaking closer to your device or in a quieter environment.")
+          break
+        case 'audio-capture':
+          setVoiceError("🎤 Microphone not found. Please check your device settings.")
+          break
+        case 'network':
+          setVoiceError("🌐 Connection error. Please check your internet and try again.")
+          break
+        case 'service-not-allowed':
+          setVoiceError("Voice service blocked. Please check your browser permissions.")
+          break
+        case 'aborted':
+          // User cancelled, no error message needed
+          return
+        case 'language-not-supported':
+          setVoiceError("Language not supported. Switching to English.")
+          // Retry with English
+          setTimeout(() => {
+            const englishRecognition = new SpeechRecognition()
+            englishRecognition.lang = 'en-US'
+            startVoiceRecognitionWithConfig(englishRecognition)
+          }, 1000)
+          return
+        default:
+          setVoiceError(`Voice search failed (${event.error}). Please try again or speak more clearly.`)
+      }
+      
+      // Play error sound
+      playNotificationSound('error')
+    }
+
+    recognition.onend = () => {
+      clearTimeout(timeoutId)
+      setListening(false)
+      console.log('Voice recognition ended')
+    }
+
+    // Start recognition with error handling
+    try {
+      recognition.start()
+      // Note: Start sound will be played in onstart event
+    } catch (error) {
+      clearTimeout(timeoutId)
+      setListening(false)
+      setVoiceError("Failed to start voice recognition. Please try again.")
+      console.error('Failed to start recognition:', error)
+    }
+
+    // Store recognition instance for stopping
+    window.currentRecognition = recognition
+  }
+
+  const stopListening = () => {
+    if (window.currentRecognition) {
+      window.currentRecognition.stop()
+      window.currentRecognition = null
+    }
+    setListening(false)
+  }
+
+  // Play notification sounds with fallback options
+  const playNotificationSound = async (type) => {
+    try {
+      // First try to play your audio files
+      let audioFile = null
+      switch(type) {
+        case 'start':
+          audioFile = "/sounds/start.mp3"
+          break
+        case 'success':
+        case 'end':
+          audioFile = "/sounds/end.mp3"
+          break
+        default:
+          break
+      }
+      
+      if (audioFile) {
+        try {
+          const audio = new Audio(audioFile)
+          audio.volume = 0.5
+          await audio.play()
+          return // Successfully played file
+        } catch (fileError) {
+          console.warn('Could not play audio file:', fileError)
+          // Fall back to generated sound
+        }
+      }
+      
+      // Fallback: Generate sound using Web Audio API
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      // Different tones for different events (Google-like sounds)
+      switch(type) {
+        case 'start':
+          oscillator.frequency.value = 800
+          gainNode.gain.setValueAtTime(0.15, audioContext.currentTime)
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15)
+          break
+        case 'success':
+        case 'end':
+          oscillator.frequency.value = 1000
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1)
+          break
+        case 'error':
+          oscillator.frequency.value = 400
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+          break
+      }
+      
+      oscillator.type = 'sine'
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + (type === 'error' ? 0.3 : 0.15))
+      
+    } catch (error) {
+      // Complete fallback: no sound if everything fails
+      console.warn('Could not play any notification sound:', error)
     }
   }
 
+  // Clear error after some time
+  useEffect(() => {
+    if (voiceError) {
+      const timer = setTimeout(() => {
+        setVoiceError('')
+      }, 5000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [voiceError])
+
   return (
     <div>
-      {/* 🔹 Main Search Box */}
-      <div className='w-full min-w-[300px] lg:min-w-[420px] h-11 lg:h-12 rounded-lg border overflow-hidden flex items-center text-neutral-500 bg-slate-50 group focus-within:border-primary-200 '>
+      {/* Main Search Box */}
+      <div className='w-full min-w-[300px] lg:min-w-[420px] h-11 lg:h-12 rounded-lg border overflow-hidden flex items-center text-neutral-500 bg-slate-50 group focus-within:border-primary-200'>
         <div>
           {isMobile && isSearchPage ? (
             <Link
@@ -462,62 +368,92 @@ const Search = () => {
                 className='bg-transparent w-full h-full outline-none'
                 onChange={handleOnChange}
               />
-              {/* Mic Button with Permission Status */}
-              <button
-                type="button"
-                onClick={handleVoiceSearch}
-                className={`px-2 transition-colors duration-200 ${
-                  listening 
-                    ? 'text-red-600 cursor-not-allowed' 
-                    : permissionGranted === false
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-green-600'
-                }`}
-                disabled={listening || (isMobile && permissionGranted === false)}
-                title={
-                  listening ? "Listening..." : 
-                  permissionGranted === false ? "Microphone access denied" :
-                  "Voice search"
-                }
-              >
-                <MdKeyboardVoice 
-                  size={22} 
-                  className={listening ? 'animate-pulse' : ''} 
-                />
-                {/* Show permission status on mobile */}
-                {isMobile && permissionGranted === false && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white"></span>
-                )}
-              </button>
+              
+              {/* Voice Search Button */}
+              {isVoiceSupported && (
+                <button
+                  type="button"
+                  onClick={handleVoiceSearch}
+                  className={`px-3 py-2 transition-all duration-200 rounded-full mx-1 ${
+                    listening 
+                      ? 'text-red-600 bg-red-50 hover:bg-red-100' 
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                  }`}
+                  title={listening ? "Stop listening" : "Voice search"}
+                  disabled={false} // Always enabled when supported
+                >
+                  {listening ? (
+                    <MdMicOff size={20} className="animate-pulse" />
+                  ) : (
+                    <MdKeyboardVoice size={20} />
+                  )}
+                </button>
+              )}
             </>
           )}
         </div>
       </div>
 
-      {/* 🔹 Enhanced Listening Modal */}
+      {/* Voice Error Display */}
+      {voiceError && (
+        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-sm">{voiceError}</p>
+        </div>
+      )}
+
+      {/* Listening Modal */}
       {listening && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center z-50">
-          <div className="bg-gray-900 text-white p-8 rounded-xl text-center max-w-sm mx-4">
-            <p className="text-xl mb-4">Listening...</p>
-            <p className="text-sm text-gray-300 mb-6">Speak clearly into your device</p>
-            
-            <div className="w-16 h-16 flex items-center justify-center rounded-full bg-red-600 animate-pulse mx-auto mb-6">
-              <MdKeyboardVoice size={22} />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-50">
+          <div className="bg-white text-gray-800 p-6 rounded-2xl text-center max-w-sm mx-4 shadow-2xl">
+            {/* Listening Animation */}
+            <div className="w-20 h-20 flex items-center justify-center rounded-full bg-red-100 mx-auto mb-4 relative">
+              <div className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-20"></div>
+              <div className="absolute inset-2 rounded-full bg-red-400 animate-pulse opacity-40"></div>
+              <MdKeyboardVoice size={28} className="text-red-600 z-10" />
             </div>
             
-            {/* Manual stop button for mobile */}
+            <h3 className="text-lg font-semibold mb-2">Listening...</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              {isMobile ? "Speak clearly and close to your device" : "Speak now"}
+            </p>
+            
+            {/* Voice level indicator */}
+            <div className="flex justify-center mb-4">
+              <div className="flex space-x-1">
+                <div className="w-1 bg-green-400 rounded animate-pulse" style={{height: '20px'}}></div>
+                <div className="w-1 bg-green-400 rounded animate-pulse" style={{height: '30px', animationDelay: '0.1s'}}></div>
+                <div className="w-1 bg-green-400 rounded animate-pulse" style={{height: '25px', animationDelay: '0.2s'}}></div>
+                <div className="w-1 bg-green-400 rounded animate-pulse" style={{height: '35px', animationDelay: '0.3s'}}></div>
+                <div className="w-1 bg-green-400 rounded animate-pulse" style={{height: '20px', animationDelay: '0.4s'}}></div>
+              </div>
+            </div>
+            
+            {/* Stop Button */}
             <button
-              onClick={() => setListening(false)}
-              className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg text-white font-medium"
+              onClick={stopListening}
+              className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-full text-white font-medium transition-colors duration-200"
             >
-              Stop Listening
+              Stop
             </button>
             
             <p className="text-xs text-gray-400 mt-4">
-              Automatically stops after {isMobile ? '8' : '12'} seconds
+              Will stop automatically after 15 seconds
             </p>
+            
+            {/* Tips for better recognition */}
+            <div className="mt-3 text-xs text-gray-500">
+              💡 Tips: Speak clearly, avoid background noise
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Click outside to close modal */}
+      {listening && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={stopListening}
+        ></div>
       )}
     </div>
   )
